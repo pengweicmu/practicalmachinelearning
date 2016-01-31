@@ -1,2 +1,3 @@
 # practicalmachinelearning
 Coursera submission
+detailed work
