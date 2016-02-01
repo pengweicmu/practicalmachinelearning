@@ -1,21 +1,3 @@
-# practicalmachinelearning
-Coursera Project submission
-
-To the grader:
-
-I am having trouble to generate a R markdown file, therefore I copy all the R script and results in this readme file to be graded,  Thanks for understanding. 
-
-# calling 
-library(caret)
-library(e1071)
-testingDataClean<-read.csv("pml-testing.csv")
-trainingDataClean<-read.csv("pml-training-clean.csv")
-trainingDataClean
-summary(trainingDataClean)
-inTrain<-createDataPartition(y=trainingDataClean$classe,p=0.8,list=FALSE)
-trainData<-trainingDataClean[inTrain,]
-testing<-trainingDataClean[-inTrain,]
-modelfitSVM<-svm(classe~.,data=trainData)
-validation<-predict(modelfitSVM,testing)
-confusionMatrix(testing$classe,validation)
-prediction<-predict(modelfitSVM,testingDataClean)
+1. During initial test and run, error messages has been encounter indicating requirement for pre-processing of data. For example, deleting large chunk of N/A data, record index, and factor variables with only one level. These includes user_name, cvtd_timeStamp, new_window. Based on the observation, Raw data after preprocessing has been saved as pml-training-clean.csv. 
+2. Several other models have been tested out, such as random forest and Trees. Each generated lower accuracy for validation data as compared with SVM. An example of using Trees is included for reference.
+3. SVM model has been selected to as the final model to train the training data and cross validated with validation data. The SVM model then used on testing data set and produce a 100% accuracy output.

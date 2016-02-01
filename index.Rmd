@@ -5,30 +5,48 @@ date: "January 31, 2016"
 output: html_document
 ---
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+A SVM model has been selected to as the final model to train the training data and cross validated with validation data. The SVM model then used on testing data set and produce a 100% accuracy output.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Several other models have been tested out and discarded due to low accuracy on validation data, as compared with SVM. An example of using Trees is included here just for reference.
 
 ```{r}
 library(caret)
+# SVM from package e1071  
 library(e1071)
+
+# Read data after pre-processing from pml-training-clean.csv
 testingDataClean<-read.csv("pml-testing.csv")
 trainingDataClean<-read.csv("pml-training-clean.csv")
+
+# List of Factors selected as independent factors after preprocessing of data
 summary(trainingDataClean)
+
+# Partition training data into train and validation
 inTrain<-createDataPartition(y=trainingDataClean$classe,p=0.8,list=FALSE)
 trainData<-trainingDataClean[inTrain,]
 testing<-trainingDataClean[-inTrain,]
+
+# Tree is selected as the first round test
+modelfitTree<-train(classe~.,method="rpart",data=trainData)
+validationTree<-predict(modelfitTree,testing)
+# Accuracy on validation data is extremly low
+confusionMatrix(testing$classe,validationTree)
+
+# SVM is selected as the second round test
 modelfitSVM<-svm(classe~.,data=trainData)
-validation<-predict(modelfitSVM,testing)
-confusionMatrix(testing$classe,validation)
+validationSVM<-predict(modelfitSVM,testing)
+# Accuracy on validation data is extremly high
+confusionMatrix(testing$classe,validationSVM)
+
+# SVM is selected as the final model on test data
 prediction<-predict(modelfitSVM,testingDataClean)
 prediction
 ```
 
-You can also embed plots, for example:
+The plot is generated using Trees, it is used to generate first intuitive understanding of data. It is not used for testing data since SVM model is selected as the final model:
 
 ```{r, echo=FALSE}
-plot(cars)
+rattle::fancyRpartPlot(modelfitTree$finalModel)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
